@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract CryptoRegulatoryCompliance is Ownable {
+    mapping(address => bool) public whitelistedAddresses;
+
+    // Events
+    event AddressWhitelisted(address indexed account);
+    event AddressBlacklisted(address indexed account);
+
+    // Whitelist an address
+    function whitelistAddress(address account) external onlyOwner {
+        require(account != address(0), "Invalid address");
+        whitelistedAddresses[account] = true;
+        emit AddressWhitelisted(account);
+    }
+
+    // Blacklist an address
+    function blacklistAddress(address account) external onlyOwner {
+        require(account != address(0), "Invalid address");
+        whitelistedAddresses[account] = false;
+        emit AddressBlacklisted(account);
+    }
+
+    // Check if an address is whitelisted
+    function isWhitelisted(address account) external view returns (bool) {
+        return whitelistedAddresses[account];
+    }
+
+    // Perform regulatory checks before allowing a transaction
+    function performRegulatoryChecks(address sender, address recipient, uint256 amount) external view returns (bool) {
+        // Check sender and recipient against whitelisted/blacklisted addresses
+        if (!whitelistedAddresses[sender] || !whitelistedAddresses[recipient]) {
+            return false;
+        }
+
+        // Perform additional checks such as transaction amount limits, etc.
+        // For illustration purposes, we assume all transactions are allowed if addresses are whitelisted.
+        return true;
+    }
+}
+ 
